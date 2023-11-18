@@ -1,0 +1,271 @@
+// More specific expression nodes
+
+class BinaryExpression extends ExpressionNode {
+  ExpressionNode left; 
+  Token operator;
+  ExpressionNode right;
+}
+
+class UnaryExpression extends ExpressionNode {
+  Token operator; 
+  ExpressionNode expression; 
+}
+
+// Variable declaration with type
+
+class VariableDeclaration extends StatementNode {
+  TypeNode type;
+  String name;
+}
+
+// More fleshed out type nodes
+
+class TypeNode {}
+
+class PrimitiveType extends TypeNode {
+  String name; 
+}
+
+class ArrayType extends TypeNode {
+  TypeNode elementType;
+}
+
+class FunctionType extends TypeNode {
+  List<TypeNode> paramTypes;
+  TypeNode returnType;
+}
+
+// Other potential nodes
+
+class Identifier extends ExpressionNode {
+  String name;
+}
+
+class MethodCall extends ExpressionNode {
+  ExpressionNode object;
+  String method;
+  List<ExpressionNode> args; 
+}
+
+class ForLoop extends StatementNode {
+  StatementNode init;
+  ExpressionNode condition; 
+  StatementNode update;
+  StatementNode body;
+}
+
+class WhileLoop extends StatementNode {
+  ExpressionNode condition;
+  StatementNode body; 
+}
+
+class Break extends StatementNode {}
+
+class Continue extends StatementNode {}
+
+// Classes
+
+class ClassNode extends StatementNode {
+  String name;
+  List<VariableDeclaration> fields;
+  List<FunctionDeclaration> methods;
+}
+
+// Interfaces
+
+class InterfaceNode extends StatementNode {
+  String name;
+  List<FunctionSignature> methods;
+}
+
+// Function declarations
+
+class FunctionDeclaration extends StatementNode {
+  String name;
+  List<VariableDeclaration> params;
+  BlockNode body;
+  TypeNode returnType; 
+}
+
+// Function signatures 
+
+class FunctionSignature {
+  String name;
+  List<VariableDeclaration> params;
+  TypeNode returnType;
+}
+
+// Block statement
+
+class BlockNode extends StatementNode {
+  List<StatementNode> statements;
+}
+
+// Control flow
+
+class IfStatement extends StatementNode {
+  ExpressionNode condition;
+  StatementNode thenBody;
+  StatementNode elseBody; // optional
+}
+
+class ForLoop extends StatementNode {
+  // Same as before 
+}
+
+class WhileLoop extends StatementNode {
+  // Same as before
+}
+
+class Break extends StatementNode {}
+
+class Continue extends StatementNode {}
+
+// Variables/constants
+
+class VariableDeclaration extends StatementNode {
+  // Same as before
+} 
+
+class ConstantDeclaration extends VariableDeclaration {}
+
+// Built-in types
+
+class NumberType extends TypeNode {} 
+
+class StringType extends TypeNode {}
+
+class BooleanType extends TypeNode {}
+
+// Null
+
+class NullNode extends ExpressionNode {}
+
+// Lists
+
+class ListType extends TypeNode {
+  TypeNode elementType; 
+}
+
+// Key-Value Pairs
+
+class PairNode<T, U> {
+  T key;
+  U value;
+}
+
+class ForLoopNode extends StatementNode {
+StatementNode init;
+ExpressionNode condition;
+StatementNode update;
+StatementNode body;
+}
+
+class WhileLoopNode extends StatementNode {
+ExpressionNode condition;
+StatementNode body;
+}
+
+class SwitchStatementNode extends StatementNode {
+ExpressionNode expression;
+List<SwitchCaseNode> cases;
+StatementNode defaultCase; // optional
+}
+
+class SwitchCaseNode extends StatementNode {
+ExpressionNode value;
+StatementNode body;
+}
+
+
+class FunctionDeclarationNode extends StatementNode {
+String name;
+List<VariableNode> params;
+TypeNode returnType;
+BlockNode body;
+}
+
+class MethodDeclarationNode extends FunctionDeclarationNode {
+// Methods are similar to functions
+
+}
+
+class ClassDeclarationNode extends StatementNode {
+String name;
+List<VariableNode> fields;
+List<MethodDeclarationNode> methods;
+}
+
+class InterfaceDeclarationNode extends StatementNode {
+String name;
+List<FunctionSignatureNode> methods;
+}
+
+class BinaryExprNode {
+  left: ExprNode
+  op: string
+  right: ExprNode
+}
+
+class VariableNode {
+  name: string 
+}
+
+class AssignNode {
+  target: ExprNode
+  value: ExprNode
+}
+
+# Symbol Table
+
+class SymbolTable {
+
+  symbols: map<string, bool>
+
+  func define(name: string) {
+    symbols[name] = true
+  }
+
+  func resolve(name: string) -> bool {
+    return name in symbols
+  }
+
+}
+
+// Modules
+
+class ModuleNode {
+  String name;
+  List<StatementNode> statements;
+}
+
+// Concurrency 
+
+class SpawnStatement {
+  ExpressionNode expression;
+}
+
+class ReceiveStatement {
+  ExpressionNode channel;
+}
+
+// Pattern matching
+
+class MatchExpression {
+  ExpressionNode expression;
+  List<MatchCase> cases;
+}
+
+class MatchCase {
+  PatternNode pattern;
+  StatementNode body; 
+}
+
+class PatternNode {}
+
+class WildcardPattern extends PatternNode {}
+
+
+
+
+
