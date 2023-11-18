@@ -1,0 +1,1518 @@
+
+import { AST nodes } from 'ast'
+
+// Parser  
+
+task parse(tokens) {
+  return program()
+}
+
+task program() {
+
+  set stmts = []
+
+  while !end_of_file() {
+    set s = statement()
+    if s {
+      stmts.add(s)
+    }
+  }
+
+  return new ProgramNode(statements=stmts)
+
+}
+
+task statement() {
+
+  if match(CLASS) {
+    return parse_class()
+  }
+
+  if match(INTERFACE) {
+    return parse_interface()
+  }
+
+  if match(IF) {
+    return parse_if_statement()
+  }
+
+  // Other statement types...
+
+}
+
+// Class Parsing
+
+task parse_class() {
+
+  // Parses class declaration 
+  // Details shown previously
+
+  return new ClassNode(...)
+
+}
+
+// Interface Parsing 
+
+task parse_interface() {
+
+  // Parses interface declaration
+  // Details shown previously
+
+  return new InterfaceNode(...)
+
+}
+
+// If Statement
+
+task parse_if_statement() {
+  
+  // Parses if statement
+  // if, condition, body, optional else 
+
+  return new IfStatementNode(...)
+
+}
+
+
+// Types
+
+task parse_type() {
+
+  if match(IDENTIFIER) {
+    return new NamedTypeNode(name=parse_identifier()) 
+  } else {
+    return new PrimitiveTypeNode(name=token())
+  }
+
+}
+
+// Identifiers 
+
+task parse_identifier() {
+  return token() // Assumes IDENTIFIER token
+}
+
+// Expressions
+
+task parse_expression() {
+
+  set left = parse_unary_expression()
+
+  while match(PLUS, MINUS) {
+    set op = token()
+    set right = parse_expression() // Recurse
+    left = new BinaryExpressionNode(left=left, op=op, right=right) 
+  }
+
+  return left
+
+} 
+
+task parse_unary_expression() {
+  if match(PLUS, MINUS) {
+    set op = token()
+    set value = parse_unary_expression()
+    return new UnaryExpressionNode(op=op, value=value)
+  } else {
+    return parse_primary_expression()
+  }
+}
+
+task parse_primary_expression() {
+  if match(IDENTIFIER) {
+    return new VariableNode(name=parse_identifier())
+  } else if match(NUMBER, STRING) {
+    return new LiteralNode(value=token()) 
+  } else if match(LPAREN) {
+    consume(LPAREN)
+    set value = parse_expression()
+    consume(RPAREN)
+    return value
+  }
+}
+
+// Utilities
+
+task match(...tokens) {
+  // Match any of the given token types 
+}
+
+task consume(token) {
+  // Consume the given expected token
+}
+
+task token() {
+  // Get current token
+}
+
+task end_of_file() {
+  // Checks if end of token stream
+}
+
+// Main
+
+set tokens = lex(code)
+set ast = parse(tokens)
+
+// AST
+
+task ProgramNode {
+  set statements = []
+}
+
+task ClassNode {
+  set name
+  set fields = []
+  set methods = []
+}
+
+task InterfaceNode {
+  set name
+  set methods = []
+}
+
+task IfStatementNode {
+  set condition
+  set body
+  set else_body
+}
+
+task BinaryExpressionNode {
+  set left
+  set op
+  set right
+}
+
+task UnaryExpressionNode {
+  set op
+  set value
+}
+
+task VariableNode {
+  set name
+}
+
+task LiteralNode {
+  set value
+}
+
+task NamedTypeNode {
+  set name
+}
+
+task PrimitiveTypeNode {
+  set name
+}
+
+
+task parse_lambda() {
+  consume(LPAREN)  
+  set params = parse_parameters()
+  consume(RPAREN)
+  consume(RETURN_TYPE)
+  set returnType = parse_type()
+  set body = block()
+
+  return new LambdaNode(params, returnType, body) 
+}
+
+task parse_type() {
+  if match(GENERIC) {
+    return parse_generic_type() 
+  } else {  
+    //... existing type parsing ...
+  }
+}
+
+task parse_generic_type() {
+  consume(LT)
+  set typeParams = []
+  repeat {
+    set param = identifier()
+    typeParams.add(param)
+    if !match(COMMA) {
+      break
+    }
+    consume(COMMA)
+  }
+  consume(GT)
+  
+  return new GenericTypeNode(typeParams) 
+}
+
+task parse_annotation {
+  // Parses annotations on declarations
+}
+
+task parse_expression() {
+  // Updated order of operations 
+  set left = ...
+
+  if match(NULL_COALESCE) {
+    // null coalescing operator  
+  }
+
+  // Rest of expression parsing
+}
+
+// Parser
+
+task parse_statement() {
+if match(FOR) {
+return parse_for_loop()
+}
+
+if match(WHILE) {
+return parse_while_loop()
+}
+
+if match(SWITCH) {
+return parse_switch_statement()
+}
+
+// Other statement types
+}
+
+task parse_for_loop() {
+// Parse init, condition, update, body
+return new ForLoopNode(...)
+}
+
+task parse_while_loop() {
+// Parse condition, body
+return new WhileLoopNode(...)
+}
+
+task parse_switch_statement() {
+// Parse expression, cases, default case
+return new SwitchStatementNode(...)
+}
+
+
+task parse_statement() {
+
+// Existing statement parsing
+
+if match(FUNCTION) {
+return parse_function_declaration();
+}
+
+if match(CLASS) {
+return parse_class_declaration();
+}
+
+if match(INTERFACE) {
+return parse_interface_declaration();
+}
+
+}
+
+task parse_function_declaration() {
+// Parse name, parameters, return type, body
+return new FunctionDeclarationNode(...);
+}
+
+task parse_class_declaration() {
+// Parse name, fields, methods
+return new ClassDeclarationNode(...);
+}
+
+task parse_interface_declaration() {
+// Parse name, method signatures
+return new InterfaceDeclarationNode(...);
+}
+
+
+// While loops
+
+task parse_while_loop() {
+  consume(WHILE)
+  set condition = parse_expression()
+  consume(LBRACE)
+  set body = parse_block() 
+  consume(RBRACE)
+
+  return new WhileLoopNode(condition, body)
+}
+
+// For loops
+task parse_for_loop() {
+  consume(FOR)
+  set init = parse_statement() // optional 
+  consume(SEMICOLON)
+  set cond = parse_expression()
+  consume(SEMICOLON)
+  set update = parse_statement() // optional
+  consume(LBRACE)
+  set body = parse_block()
+  consume(RBRACE)
+
+  return new ForLoopNode(init, cond, update, body) 
+}
+
+// Switch statements
+task parse_switch_statement() {
+  consume(SWITCH)
+  set expr = parse_expression()
+  consume(LBRACE)
+
+  set cases = []
+
+  // Parse cases  
+  while !match(RBRACE) {
+    if match(CASE) {
+      set value = parse_expression()
+      consume(COLON)  
+      set body = parse_block()
+      add(cases, SwitchCaseNode(value, body))
+    } else if match(DEFAULT) {
+      consume(COLON)
+      set body = parse_block()  
+      cases.default = body 
+    }
+  }
+
+  consume(RBRACE)
+
+  return SwitchStatementNode(expr, cases)
+}
+
+// Function declarations
+task parse_function() {
+  set name = parse_identifier()
+  consume(LPAREN)
+  set params = parse_parameters() 
+  consume(RPAREN)
+  set returnType = parse_type() // Optional
+  set body = parse_block()
+
+  return FunctionDeclarationNode(name, params, returnType, body)
+}
+
+// Classes
+task parse_class() {
+  // Parse class name, fields, methods  
+} 
+
+// Interfaces
+task parse_interface() {
+  // Parse interface name, method signatures
+}
+
+// Function calls
+task parse_call_expression() {
+  set func = parse_expression() // Could be identifier, property, etc
+  consume(LPAREN)
+  set args = []
+  if !match(RPAREN) {
+    repeat {
+      set arg = parse_expression()  
+      args.add(arg)
+      if !match(COMMA) {
+        break 
+      }
+      consume(COMMA)
+    }
+  }
+  consume(RPAREN)
+
+  return CallExpressionNode(func, args) 
+}
+
+// Method calls 
+task parse_method_call() {
+  set object = parse_expression()
+  consume(DOT)
+  set method = parse_identifier()
+  // Parse arguments like regular call
+  return MethodCallNode(object, method, args)
+} 
+
+// Variable declarations
+task parse_variable_decl() {
+  set type = parse_type()
+  set name = parse_identifier()
+  consume(SEMICOLON)
+  return VariableDeclNode(type, name)
+}
+
+// Constant declarations
+task parse_constant_decl() {
+  consume(CONST) 
+  set type = parse_type()
+  set name = parse_identifier()
+  consume(EQ)
+  set value = parse_expression() 
+  consume(SEMICOLON)
+  return ConstantDeclNode(type, name, value)
+}
+
+// Deletion
+task parse_delete() {
+  consume(DELETE)
+  set expr = parse_expression() // Var, property, etc
+  consume(SEMICOLON)
+  return DeleteNode(expr)
+}
+
+// Lists
+task parse_list() {
+  consume(LBRACKET)
+  set elems = []
+  if !match(RBRACKET) {
+    repeat {
+      set elem = parse_expression()
+      elems.add(elem)
+      if !match(COMMA) {
+         break
+      }
+      consume(COMMA) 
+    }
+  }
+  consume(RBRACKET)
+  return ListLiteralNode(elems)
+}
+
+// Maps 
+task parse_map() {
+  consume(LBRACE)
+  set pairs = []
+  
+  if !match(RBRACE) {
+    repeat {
+      set key = parse_expression()
+      consume(COLON)
+      set value = parse_expression()
+      pairs.add(PairNode(key, value))  
+      if !match(COMMA) {
+        break
+      }
+      consume(COMMA)  
+    }
+  }
+  consume(RBRACE)
+
+  return MapLiteralNode(pairs)
+}
+
+// Blocks
+task parse_block() {
+  set stmts = []
+  while !match(RBRACE) {
+     set stmt = parse_statement()
+     if (stmt) {
+       stmts.add(stmt) 
+     }
+  }
+  return BlockNode(stmts)
+}
+
+// If statements
+task parse_if_statement() {
+  consume(IF)
+  set cond = parse_expression()
+  consume(LBRACE)
+  set body = parse_block()
+  set elseBody = null
+
+  if match(ELSE) {
+    consume(LBRACE)
+    elseBody = parse_block()
+  }
+
+  consume(RBRACE)
+
+  return IfStatementNode(cond, body, elseBody)
+}
+
+// Try/catch
+task parse_try_statement() {
+  consume(TRY)
+  set body = parse_block()
+
+  set catches = []
+
+  while match(CATCH) {
+    consume(LPAREN)
+    set exception = parse_type() // Catch exception type
+    consume(IDENTIFIER) // Exception variable
+    consume(RPAREN)
+    set catchBody = parse_block()
+    catches.add(CatchNode(exception, catchBody)) 
+  }
+
+  set finallyBody = null
+  if match(FINALLY) {
+    finallyBody = parse_block()
+  }
+
+  return TryStatementNode(body, catches, finallyBody)  
+}
+
+
+// Classes
+task parse_class() {
+  consume(CLASS)
+  set name = parse_identifier() 
+
+  consume(LBRACE)
+
+  set fields = []
+  while match(VARIABLE) {
+     set field = parse_variable_decl()
+     fields.add(field)
+  }
+
+  set methods = []
+  while match(FUNCTION) {
+    set method = parse_method()
+    methods.add(method)
+  }
+
+  consume(RBRACE)
+
+  return ClassNode(name, fields, methods)
+}
+
+// Method declarations
+task parse_method() {
+  set name = parse_identifier()
+  consume(LPAREN)
+  
+  set params = []
+  // Parse parameters 
+  consume(RPAREN)
+
+  set returnType = null 
+  if match(RETURN_TYPE) {
+    returnType = parse_type()
+  }
+
+  set body = parse_block()  
+
+  return MethodNode(name, params, returnType, body)
+}
+
+// Interfaces
+task parse_interface() {
+  consume(INTERFACE)
+  set name = parse_identifier()
+
+  consume(LBRACE)  
+
+  set methods = []
+  while match(FUNCTION) {
+     set method = parse_method_signature()
+     methods.add(method)
+  }
+
+  consume(RBRACE)
+
+  return InterfaceNode(name, methods)  
+}
+
+// Method signatures
+task parse_method_signature() {
+  set name = parse_identifier()
+  consume(LPAREN)
+
+  set params = parse_parameters()
+
+  consume(RPAREN)
+  set returnType = parse_type()
+
+  return MethodSignatureNode(name, params, returnType)
+}
+
+// Enums
+task parse_enum() {
+  consume(ENUM)
+  set name = parse_identifier()
+  consume(LBRACE)
+
+  set values = []
+  while !match(RBRACE) {
+    set value = parse_identifier()
+    if match(EQ) {
+      consume(EQ)
+      set initializer = parse_expression()
+    } else {
+      initializer = null
+    }
+    values.add(EnumValueNode(name, initializer))
+    if !match(COMMA) {
+      break 
+    }
+    consume(COMMA)
+  }
+
+  consume(RBRACE)
+
+  return EnumNode(name, values)
+}
+
+// Generic types 
+task parse_generic_type() {
+  consume(LT)
+  set params = parse_comma_sep(parse_identifier)
+  consume(GT)
+  set base = parse_type() // The base type  
+  return GenericTypeNode(params, base)
+}
+
+// Annotations  
+task parse_annotation() {
+  consume(AT)
+  set name = parse_identifier()
+
+  set props = null
+  if match(LPAREN) {
+    consume(LPAREN)
+    props = parse_assignments() 
+    consume(RPAREN)
+  }
+
+  return AnnotationNode(name, props)
+}
+
+task parse_assignments() {
+  set assignments = []
+  while !match(RPAREN) {
+    set name = parse_identifier()
+    consume(EQ)
+    set value = parse_expression()
+    assignments.add(AssignmentNode(name, value))
+    if !match(COMMA) {
+      break
+    }
+    consume(COMMA)
+  }
+  return assignments
+}
+
+// Modules
+task parse_module() {
+  consume(MODULE)
+  set name = parse_identifier()
+  set body = parse_block()
+  return ModuleNode(name, body) 
+}
+
+// Imports
+task parse_import() {
+  consume(IMPORT)
+  set path = parse_string_literal()
+  set aliases = []
+  if match(AS) {
+    consume(AS)
+    aliases = parse_comma_sep(parse_identifier)
+  }
+  return ImportNode(path, aliases)
+}
+
+// Helper for comma separated lists
+task parse_comma_sep(parser) {
+  set elems = []
+  repeat {
+    set elem = parser()
+    elems.add(elem)
+    if !match(COMMA) {
+      break
+    }
+    consume(COMMA)
+  }
+  return elems
+}
+
+// Packages
+task parse_package() {
+  consume(PACKAGE)
+  set name = parse_identifier()
+
+  consume(LBRACE)
+  set body = parse_block() 
+  consume(RBRACE)
+
+  return PackageNode(name, body)
+}
+
+// Exporting
+task parse_export() {
+  consume(EXPORT)
+  set exports = parse_comma_sep(parse_identifier)
+  consume(SEMICOLON)
+  return ExportNode(exports) 
+}
+
+// Operators
+task parse_binary_operator() {
+  set left = parse_expression()
+  set op = token() // Current token
+  set right = parse_expression()
+  return BinaryOpNode(left, op, right)
+}
+
+// Unary operators
+task parse_unary_operator() {
+  set op = token()
+  set operand = parse_expression()
+  return UnaryOpNode(op, operand)  
+}
+
+// Assignment operators
+task parse_assignment() {
+  set left = parse_expression()
+  set op = token()
+  set right = parse_expression()
+  return AssignNode(left, op, right)
+}
+
+// Ternary operator  
+task parse_ternary() {
+  set condition = parse_expression()
+  consume(QUESTION_MARK)
+  set thenExpr = parse_expression()
+  consume(COLON)
+  set elseExpr = parse_expression()
+
+  return TernaryNode(condition, thenExpr, elseExpr)
+}
+
+// Null coalescing operator
+task parse_null_coalesce() {
+  set left = parse_expression()
+  consume(NULL_COALESCE)
+  set right = parse_expression()
+  return NullCoalesceNode(left, right) 
+}
+
+// Lambda functions
+task parse_lambda() {
+  consume(LPAREN)
+  set params = parse_parameters()
+  consume(RPAREN)
+  consume(THIN_ARROW) 
+  set body = parse_expression()
+  return LambdaNode(params, body)
+}
+
+// Misc utilities
+task parse_parameters() {
+  return parse_comma_sep(parse_variable_decl) 
+}
+
+task parse_string_literal() {
+  return token() // Assumes STRING token 
+}
+
+// Pattern matching
+
+task parse_match_expression() {
+  consume(MATCH)
+  set expr = parse_expression() 
+  consume(LBRACE)
+
+  set cases = []
+
+  while !match(RBRACE) {
+    if match(CASE) {
+      consume(CASE)
+      set pattern = parse_pattern()
+      consume(THIN_ARROW)
+      set body = parse_block()
+      cases.add(MatchCaseNode(pattern, body))
+    } else if match(DEFAULT) {
+      consume(DEFAULT)
+      consume(THIN_ARROW)
+      set body = parse_block()
+      cases.defaultCase = body
+    }
+  }
+
+  consume(RBRACE)
+
+  return MatchExpressionNode(expr, cases)
+}
+
+task parse_pattern() {
+  if match(UNDERSCORE) {
+    return WildcardPatternNode()
+  } else {
+    return parse_expression() // Literal
+  }
+}
+
+// Ranges
+
+task parse_range_expression() {
+  set start = parse_expression()
+  consume(RANGE)
+  set end = parse_expression()
+
+  return RangeNode(start, end) 
+}
+
+// Comprehensions
+
+task parse_list_comprehension() {
+  consume(LBRACKET)
+  
+  set expr = parse_expression()
+
+  consume(PIPE) 
+  set generator = parse_generator()
+
+  while match(COMMA) {
+    consume(COMMA)
+    set filter = parse_generator()
+    generator = ComposeGeneratorsNode(generator, filter) 
+  }  
+
+  consume(RBRACKET)
+
+  return ListComprehensionNode(expr, generator)
+}
+
+task parse_generator() {
+  set iter = parse_expression()
+  consume(IN)
+  set collection = parse_expression()
+
+  return GeneratorNode(iter, collection) 
+}
+
+// Async/await
+
+task parse_async_func() {
+  consume(ASYNC)
+  return parse_function() // Async functions are like regular functions  
+}
+
+task parse_await_expression() {
+  consume(AWAIT)
+  set value = parse_expression()
+  return AwaitNode(value) 
+}
+
+// Traits
+
+task parse_trait() {
+  consume(TRAIT) 
+  set name = parse_identifier()
+  consume(LBRACE)
+
+  set methods = []
+  while !match(RBRACE) {
+    set method = parse_method_signature()
+    methods.add(method)
+  }
+
+  consume(RBRACE)
+
+  return TraitNode(name, methods)
+}
+
+// Trait implementation 
+
+task parse_trait_impl() {
+  consume(IMPLEMENTS)
+  set trait = parse_type()
+  set target = parse_type() 
+  return TraitImplNode(target, trait)
+}
+
+// Type aliases
+
+task parse_type_alias() {
+  consume(TYPE)
+  set name = parse_identifier()
+  consume(EQ)
+  set type = parse_type()
+  consume(SEMICOLON)
+  return TypeAliasNode(name, type)
+}
+
+// Casting
+
+task parse_cast() {
+  consume(LPAREN)
+  set type = parse_type()
+  consume(RPAREN)
+  set expr = parse_expression()
+  return CastNode(type, expr)
+}
+
+// Error handling
+
+task parse_throw() {
+  consume(THROW)
+  set expr = parse_expression()
+  consume(SEMICOLON)
+  return ThrowNode(expr) 
+}
+
+task parse_try_catch() {
+  // Parses try/catch blocks
+  // Details shown previously
+}
+
+// Concurrency
+
+task parse_spawn() {
+  consume(SPAWN)
+  set call = parse_call_expr()
+  return SpawnNode(call)
+}
+
+task parse_receive() {
+  consume(RECEIVE)
+  set chan = parse_expression()
+  return ReceiveNode(chan)  
+}
+
+// Contracts
+
+task parse_contract() {
+  consume(CONTRACT)
+  set name = parse_identifier()
+  consume(LBRACE)
+
+  set requires = []
+  if match(REQUIRES) {
+    consume(REQUIRES)
+    requires = parse_contract_section()
+  }
+
+  set ensures = []  
+  if match(ENSURES) {
+    consume(ENSURES)
+    ensures = parse_contract_section()
+  }
+
+  consume(RBRACE)
+
+  return ContractNode(name, requires, ensures)
+}
+
+task parse_contract_section() {
+  set constraints = []
+  while !match(RBRACE) {
+    set expr = parse_expression()
+    constraints.add(expr)
+    if !match(COMMA) {
+      break
+    }
+    consume(COMMA)
+  }
+  return constraints
+}
+
+// Parsing meta objects
+
+task parse_meta_object() {
+  consume(META)
+  set name = parse_identifier()
+  consume(LBRACE)
+
+  set props = []
+  while !match(RBRACE) {
+    set key = parse_identifier()
+    consume(COLON)
+    set value = parse_expression()
+    props.add(PairNode(key, value))
+    if !match(COMMA) {
+      break
+    }
+    consume(COMMA)
+  }
+
+  consume(RBRACE)
+
+  return MetaObjectNode(name, props)
+}
+
+// Macro parsing
+
+task parse_macro() {
+  consume(MACRO)
+  set name = parse_identifier()
+  consume(LPAREN)
+  set params = parse_comma_sep(parse_identifier)
+  consume(RPAREN)
+  set body = parse_block()
+
+  return MacroNode(name, params, body)  
+}
+
+// Parsing dialect syntax
+
+dialect SQL {
+  // SQL parsing logic
+}
+
+dialect HTML {
+  // HTML parsing logic
+}
+
+// Parsing code tagged with a dialect
+
+code `SQL 
+  SELECT * FROM table
+`
+
+code `HTML
+  <div>Hello</div> 
+`
+
+// Parsing code blocks
+
+code {
+  // Nova code
+}
+
+// Parsing attributes
+
+[@test]
+task sum(a, b) {
+  // ...
+}
+
+task parse_attribute() {
+  consume(AT)
+  set name = parse_identifier()
+  return AttributeNode(name) 
+}
+
+// Parsing plugins
+
+plugin Logging {
+  // Logging functions
+}
+
+task parse_plugin() {
+  consume(PLUGIN)
+  set name = parse_identifier()
+  consume(LBRACE)
+  set body = parse_block()
+  consume(RBRACE)
+
+  return PluginNode(name, body)
+}
+
+// Parsing conditional compilation 
+
+if OS.windows {
+  // Windows specific logic
+}
+
+task parse_if_compile() {
+  consume(IF)
+  set condition = parse_expression()
+  set body = parse_block()
+
+  set elseBody = null
+  if match(ELSE) {
+    elseBody = parse_block() 
+  }
+
+  return IfCompileNode(condition, body, elseBody)
+}
+
+// Parsing build configuration
+
+build debug {
+  // Debug settings
+}
+
+build release {
+  // Release settings  
+}
+
+task parse_build() {
+  consume(BUILD)
+  set name = parse_identifier()
+  set body = parse_block()
+  return BuildNode(name, body)
+}
+
+// Parsing embedded DSL
+
+html {
+  // HTML DSL
+}
+
+task parse_dsl() {
+  set lang = parse_identifier()
+  set body = parse_block()
+  return DSLNode(lang, body)
+}
+
+// Parsing operators
+
+infix + - * / %    // Binary operators
+prefix ! - ++ --    // Unary operators
+
+task parse_binary_operator() {
+  // Parses infix binary operators 
+  // Details shown previously
+}
+
+task parse_unary_operator() {
+  // Parses prefix unary operators
+  // Details shown previously
+}
+
+// Operator overloading
+
+task +(other: Vec) -> Vec {
+  // Override + operator
+} 
+
+// Parsing operator overloading
+
+task parse_operator_overload() {
+  set name = parse_identifier() // +, -, etc
+  consume(LPAREN) 
+  set param = parse_parameter() // Parse param type
+  consume(RPAREN)
+  set returnType = parse_return_type() // Parse return type
+  set body = parse_block()
+
+  return OperatorOverloadNode(name, param, returnType, body)
+}
+
+// Parsing inheritence 
+
+class Child inherits Parent {
+  // ...
+}
+
+task parse_inheritance() {
+  consume(INHERITS) 
+  set parent = parse_type()
+  // ...
+}
+
+// Parsing mixins
+
+mixin Logger() {
+  // Logging methods
+}
+
+task parse_mixin() {
+  consume(MIXIN)
+  set name = parse_call_expression() 
+  // ...
+}
+
+// Parsing traits
+
+trait Iterator {
+  next()
+  hasNext() -> bool
+}
+
+task parse_trait() {
+  // Details shown previously
+}
+
+// Parsing capabilities 
+
+@capabilities(storage, network)
+system Node {
+  // ...
+}
+
+task parse_capabilities() {
+  consume(CAPABILITIES)
+  consume(LPAREN)
+  set caps = parse_comma_sep(parse_identifier)
+  consume(RPAREN)
+  return CapsNode(caps) 
+}
+
+// Parsing behaviors
+
+@behavior async 
+task fetchData() {
+  // ...
+}
+
+task parse_behavior() {
+  consume(BEHAVIOR)
+  set behaviors = parse_comma_sep(parse_identifier)
+  return BehaviorNode(behaviors)
+}
+
+// Parsing visibility
+
+public task sum() {
+  // ... 
+}
+
+private set x = 10
+
+task parse_visibility() {
+  if match(PUBLIC) {
+    return VisibilityModifier.Public
+  } else if match(PRIVATE) {
+    return VisibilityModifier.Private 
+  } 
+  // else, package-private by default
+}
+
+// Parsing assertions
+
+task sum(a, b) {
+  assert(a > 0) // Precondition
+  // ...
+  assert(result > a) // Postcondition
+}
+
+task parse_assert() {
+  consume(ASSERT)
+  set expr = parse_expression()
+  return AssertNode(expr)
+}  
+
+// Parsing optimizations
+
+@optimize(speed)
+task sum() {
+  // ...
+}
+
+task parse_optimize() {
+  consume(OPTIMIZE)
+  set opts = parse_comma_sep(parse_identifier)
+  return OptimizeNode(opts)
+}
+
+// Parsing runtime reflection
+
+@reflect
+class User {
+  // ...
+}
+
+task parse_reflect() {
+  consume(REFLECT)
+  return ReflectNode() 
+}
+
+// Parsing dynamic code evaluation
+
+eval("print('Hi')")
+
+task parse_eval() {
+  consume(EVAL)
+  set code = parse_expression()
+  return EvalNode(code)
+}
+
+// Parsing dynamic code compilation
+
+compile("
+  task hello() {
+    print('Hi')
+  }
+")
+
+task parse_compile() {
+  consume(COMPILE)
+  set code = parse_expression() 
+  return CompileNode(code)  
+}
+
+// Parsing string interpolation
+
+set msg = "Hello, #{user.name}!"
+
+task parse_interpolation() {
+  if match(POUND_LBRACE) {
+    consume(POUND_LBRACE)
+    set expr = parse_expression()
+    consume(RBRACE)
+    return InterpolationNode(expr)
+  }
+}
+
+// Parsing multi-line strings
+
+set sql = """
+  SELECT * 
+  FROM table
+"""
+
+task parse_multiline_string() {
+  // Parse lines until """ reached
+}
+
+// Parsing raw strings
+
+set regex = r"\d+" // No escaped characters
+
+task parse_raw_string() {
+  if match(R) {
+     consume(R)
+     // Parse raw string 
+  }
+}
+
+// Parsing pattern matching
+
+match x {
+  0 -> print("zero") 
+  1 -> print("one")
+  _ -> print("other")
+}
+
+task parse_match_expression() {
+  // Details shown previously
+}
+
+// Parsing ranges
+
+set r = 1..10
+
+task parse_range_expression() {
+  // Details shown previously 
+}
+
+// Parsing type aliases
+
+type MyInt = int
+
+task parse_type_alias() {
+  // Details shown previously
+}  
+
+// Parsing async blocks
+
+async {
+  await fetch()
+}
+
+task parse_async_block() {
+  consume(ASYNC)
+  set body = parse_block()
+  return AsyncBlockNode(body)
+}
+
+// Parsing assertions
+
+assert(x > 0)
+
+task parse_assertion() {
+  // Details shown previously
+}
+
+// Parsing documentation comments
+
+/**
+ * Class docstring
+*/
+class Person {
+
+}
+
+task parse_documentation() {
+  if match(DOC_COMMENT) {
+    // Parse comment contents
+  }
+}
+
+// Parsing named arguments
+
+task hello(name: "world") {
+  print("Hello, #{name}!") 
+}
+
+task parse_named_arg() {
+  set name = parse_identifier()
+  consume(COLON)
+  set value = parse_expression()
+
+  return NamedArgNode(name, value)
+}
+
+// Parsing default parameter values
+
+task greet(name = "friend") {
+  print("Hello #{name}!") 
+}
+
+task parse_default_value() {
+  consume(EQ)
+  set value = parse_expression()
+  return DefaultValueNode(value)
+}
+
+// Parsing variable argument lists
+
+task sum(...nums) {
+  // Sum nums
+}
+
+task parse_varargs() {
+  consume(ELLIPSIS) 
+  return VarargsNode()
+}
+
+// Parsing parameter destructuring
+
+task greet({name, age}) {
+  print("Hello #{name}, age #{age}!")
+}
+
+task parse_destructure() {
+  consume(LBRACE)
+  set bindings = parse_binding_list()
+  consume(RBRACE)
+
+  return DestructureNode(bindings)
+}
+
+// Parsing binding list
+task parse_binding_list() {
+  set bindings = []
+
+  while !match(RBRACE) {
+    set name = parse_identifier()
+    if match(COLON) {
+      consume(COLON)
+      set type = parse_type()
+    }
+    bindings.add(name, type)
+
+    if !match(COMMA) {
+      break
+    }
+    consume(COMMA)
+  }
+
+  return bindings
+}
+
+// Parsing spreads
+
+set list = [1, 2, ...others]
+
+task parse_spread() {
+  consume(ELLIPSIS)
+  set expr = parse_expression()
+
+  return SpreadNode(expr)
+}
+
+// Parsing compiler directives
+
+#[warn(unused_variable)]
+set x = 10
+
+task parse_directive() {
+  if match(HASH_LSQUARE) {
+    // Parse compiler directive    
+  } 
+}
+
