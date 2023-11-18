@@ -1,0 +1,291 @@
+Program: Statement* 
+
+Statement:
+    ImportStatement
+    | VariableDeclaration 
+    | FunctionDeclaration
+    | ExpressionStatement
+    | IfStatement
+    | ForLoop
+    | WhileLoop
+    | MatchStatement
+    | SpawnStatement
+    | ReturnStatement
+
+ImportStatement:
+    'import' StringLiteral ('as' Identifier)? 
+
+VariableDeclaration:
+    'let' Identifier ('=' Expression)? ';'
+
+FunctionDeclaration:
+    'func' Identifier '(' ParameterList? ')' (':' Type)? Block
+    
+ParameterList:
+    Parameter (',' Parameter)*
+
+Parameter:
+    Identifier (':' Type)?
+
+ExpressionStatement:
+    Expression ';'
+    
+IfStatement:
+    'if' Expression Block ('else' Block)?
+
+ForLoop: 
+    'for' '(' (VariableDeclaration | Expression)? ';' Expression? ';' Expression? ')' Block
+
+WhileLoop:
+    'while' Expression Block
+    
+MatchStatement:
+    'match' Expression '{' MatchArm* '}'
+
+MatchArm:
+    'case' Pattern '=>' Block
+
+SpawnStatement:
+    'spawn' Expression
+    
+ReturnStatement:
+    'return' Expression? ';'
+
+Block: '{' Statement* '}'
+
+Expression:
+    Literal
+    | Identifier 
+    | BinaryExpression
+    | UnaryExpression
+    | CallExpression
+    | MatchExpression
+    
+BinaryExpression: 
+    Expression BinaryOperator Expression
+
+BinaryOperator:
+    '+' | '-' | '*' | '/' | '%' | '==' | '!=' | '<' | '>' | '<=' | '>=' 
+    
+UnaryExpression:
+    UnaryOperator Expression
+
+UnaryOperator:
+    '+' | '-' | '!'
+    
+CallExpression:
+    Expression '(' ArgumentList ')'
+
+ArgumentList:
+    Expression (',' Expression)*
+
+MatchExpression:
+    'match' Expression '{' MatchArm+ '}' 
+    
+Pattern: 
+    Identifier
+    | Wildcard
+    
+Wildcard: '_'
+
+Literal:
+    NumberLiteral
+    | StringLiteral
+    | BoolLiteral
+    | NullLiteral
+
+Type:
+    // Types like int, string, etc.
+
+    Program: Statement*
+
+Statement:
+    ImportStatement
+    | VariableDeclaration
+    | ConstantDeclaration 
+    | FunctionDeclaration
+    | ExpressionStatement
+    | IfStatement
+    | ForLoop  
+    | WhileLoop
+    | MatchStatement
+    | ClassDeclaration
+    | InterfaceDeclaration
+    | SpawnStatement
+    | ReceiveStatement
+    | ReturnStatement
+
+ImportStatement:
+    'import' StringLiteral ('as' Identifier)?  
+
+VariableDeclaration:
+    'let' Identifier ('=' Expression)? ';'
+
+ConstantDeclaration: 
+    'const' Identifier '=' Expression ';'
+
+FunctionDeclaration:
+    'func' Identifier '(' ParameterList? ')' (':' Type)? Block
+
+ParameterList:
+    Parameter (',' Parameter)* 
+
+Parameter:
+    Identifier (':' Type)?
+
+ExpressionStatement:
+    Expression ';'
+
+IfStatement:
+    'if' Expression Block ('else' Block)?
+
+ForLoop:
+    'for' '(' (VariableDeclaration | Expression)? ';' Expression? ';' Expression? ')' Block
+
+WhileLoop:
+    'while' Expression Block
+
+MatchStatement: 
+    'match' Expression '{' MatchArm+ '}'
+
+MatchArm:
+    'case' Pattern '=>' Block
+
+ClassDeclaration:
+    'class' Identifier '{' ClassMember* '}'
+
+ClassMember:
+    Constructor
+    | Method
+    | Field    
+
+Constructor:
+    'constructor' '(' ParameterList? ')' Block
+
+Method:
+    'func' Identifier '(' ParameterList? ')' (':' Type)? Block
+
+Field:
+    'let' Identifier (':' Type)? ';'
+
+InterfaceDeclaration:
+    'interface' Identifier '{' MethodSignature* '}'
+
+MethodSignature: 
+    'func' Identifier '(' ParameterList? ')' (':' Type)? ';'
+
+SpawnStatement:
+    'spawn' Expression
+
+ReceiveStatement:
+    'receive' Expression   
+
+ReturnStatement:
+    'return' Expression? ';'
+    
+Block: '{' Statement* '}' 
+
+Expression:
+    // Expressions
+    
+Pattern:
+    // Patterns 
+
+Type:
+    // Types
+
+    ModuleDeclaration:
+  'module' Identifier '{' Statement* '}' 
+
+PackageDeclaration:
+  'package' Identifier '{' Statement* '}'
+
+  SpawnStatement: 
+   'spawn' Expression
+   
+ReceiveStatement:
+   'receive' Expression
+   
+SelectStatement:
+   'select' '{' Case+ '}'
+   
+Case:
+   'case' ReceiveStatement => Block
+
+   TryCatchStatement:
+  'try' Block 'catch' Param Block 
+
+ThrowStatement:
+  'throw' Expression
+
+  BinaryExpression:
+  Expression BinaryOperator Expression
+
+BinaryOperator:
+  '+' | '-' | '*' | '/' | '%' | '==' | '!=' | '<' | '>' | '<=' | '>='
+
+UnaryExpression:
+  UnaryOperator Expression
+  
+UnaryOperator:
+  '+' | '-' | '!'
+
+  CallExpression:
+  Expression '(' ArgumentList ')'
+
+ArgumentList:
+  Expression (',' Expression)*
+
+  GenericType:
+  Identifier '<' TypeParameter (',' TypeParameter)* '>'
+
+TypeParameter:
+  Identifier
+
+  Type:
+  //...
+  | GenericType
+
+  MemberExpression:
+  Expression '.' Identifier
+
+IndexExpression:
+  Expression '[' Expression ']'
+
+Parameter:  
+    Identifier (':' Type)?
+
+    VariableDeclaration:
+   'let' Identifier (':' Type)? ';'
+
+   UnaryOperator:
+   '+' | '-' | '!' | '++' | '--'
+
+   // Classes
+ClassDeclaration:
+  'class' Identifier '{' ClassMember* '}'
+
+ClassMember:
+  Field
+  | Method
+  | Constructor
+
+// Interfaces  
+InterfaceDeclaration:
+  'interface' Identifier '{' MethodSignature* '}'
+
+// Generics
+GenericType:
+  Identifier '<' TypeParameterList '>'
+
+TypeParameterList:
+  TypeParameter (',' TypeParameter)*
+
+TypeParameter:
+  Identifier
+
+// Modules
+ModuleDeclaration:
+  'module' Identifier '{' Statement* '}'
+
+  
