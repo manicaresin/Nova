@@ -1,0 +1,122 @@
+
+import {AST} from 'ast'
+
+enum Opcode {
+MOV, ADD, SUB, etc...
+}
+
+class CodeGenerator {
+
+code: List<int> // bytecode or machine code
+
+func generate(node ASTNode) {
+match node {
+// Generate code for different AST nodes
+
+  BinaryExpression(left, right) -> {
+    generate(left) 
+    generate(right)
+    emit(ADD) // Emit opcode
+  }
+
+  IfStatement(cond, body) -> {
+    generate(cond) // Gen code for condition
+    emit(JZ) // Jump if zero/false
+    generate(body)
+  }
+
+  WhileLoop(cond, body) -> {
+    labelLoopStart: 
+    generate(cond)
+    emit(JZ, labelEnd)
+    generate(body)
+    emit(JMP, labelLoopStart)
+    labelEnd:
+  }
+
+  // Generate code for other node types...
+
+}
+
+}func emit(op Opcode, operand) {
+code.add(encode(op)) // Encode opcode
+
+if operand != null {
+  code.add(operand) // Emit operand 
+}
+
+}
+
+}
+
+// Generate code starting from AST root node
+set gen = CodeGenerator()
+
+gen.generate(ast)
+
+// Then execute or store generated code
+execute(gen.code)
+
+// Handling variable access
+
+match node {
+
+VariableAccess(name) -> {
+set reg = getRegister(name)
+emit(LOAD, reg)
+}
+
+VariableAssign(name, value) -> {
+generate(value) // Generate code for value
+set reg = getRegister(name)
+emit(STORE, reg)
+}
+
+}
+
+// Registers and allocation
+
+registers: List<Register>
+
+func getRegister(name) -> Register {
+if !registers.contains(name) {
+set reg = allocateRegister()
+registers[name] = reg
+}
+return registers[name]
+}
+
+// Sample optimization (constant folding)
+
+match node {
+
+BinaryExpression(left, right) -> {
+if isConstant(left) && isConstant(right) {
+set value = evaluate(left) + evaluate(right)
+emit(LOAD_CONST, value)
+} else {
+generate(left)
+generate(right)
+emit(ADD)
+}
+}
+
+}
+
+// Targeting architecture
+
+set architecture = X86_64 // Choose architecture
+
+emitX86(opcode, args...) {
+// Emit x86 opcode and encoding
+}
+
+// Integration
+
+loadVM(vm) {
+// Initialize VM and load generated code
+}
+
+interpret(vm) {
+// Interpret loaded bytecode
+}
